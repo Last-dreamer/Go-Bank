@@ -24,8 +24,8 @@ func New(db DBTX) *Queries {
 func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	q := Queries{db: db}
 	var err error
-	if q.createAccontStmt, err = db.PrepareContext(ctx, createAccont); err != nil {
-		return nil, fmt.Errorf("error preparing query CreateAccont: %w", err)
+	if q.createAccountStmt, err = db.PrepareContext(ctx, createAccount); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateAccount: %w", err)
 	}
 	if q.deleteAccountStmt, err = db.PrepareContext(ctx, deleteAccount); err != nil {
 		return nil, fmt.Errorf("error preparing query DeleteAccount: %w", err)
@@ -44,9 +44,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 
 func (q *Queries) Close() error {
 	var err error
-	if q.createAccontStmt != nil {
-		if cerr := q.createAccontStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing createAccontStmt: %w", cerr)
+	if q.createAccountStmt != nil {
+		if cerr := q.createAccountStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createAccountStmt: %w", cerr)
 		}
 	}
 	if q.deleteAccountStmt != nil {
@@ -108,7 +108,7 @@ func (q *Queries) queryRow(ctx context.Context, stmt *sql.Stmt, query string, ar
 type Queries struct {
 	db                 DBTX
 	tx                 *sql.Tx
-	createAccontStmt   *sql.Stmt
+	createAccountStmt  *sql.Stmt
 	deleteAccountStmt  *sql.Stmt
 	getAccountStmt     *sql.Stmt
 	getListAccountStmt *sql.Stmt
@@ -119,7 +119,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 	return &Queries{
 		db:                 tx,
 		tx:                 tx,
-		createAccontStmt:   q.createAccontStmt,
+		createAccountStmt:  q.createAccountStmt,
 		deleteAccountStmt:  q.deleteAccountStmt,
 		getAccountStmt:     q.getAccountStmt,
 		getListAccountStmt: q.getListAccountStmt,
