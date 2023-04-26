@@ -80,3 +80,24 @@ func TestDeleteAccount(t *testing.T) {
 	require.EqualError(t, err, sql.ErrNoRows.Error())
 	require.Empty(t, account2)
 }
+
+func TestGetListAccount(t *testing.T) {
+	for i := 0; i < 5; i++ {
+		createRandomAccount(t)
+	}
+
+	args := GetListAccountParams{
+		Limit:  5,
+		Offset: 5,
+	}
+
+	accounts, err := testQuries.GetListAccount(context.Background(), args)
+
+	require.NoError(t, err)
+	require.Len(t, accounts, 5)
+
+	for _, account := range accounts {
+		require.NotEmpty(t, account)
+	}
+
+}

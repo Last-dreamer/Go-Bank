@@ -27,17 +27,32 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.createAccountStmt, err = db.PrepareContext(ctx, createAccount); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateAccount: %w", err)
 	}
+	if q.createEntriesStmt, err = db.PrepareContext(ctx, createEntries); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateEntries: %w", err)
+	}
 	if q.deleteAccountStmt, err = db.PrepareContext(ctx, deleteAccount); err != nil {
 		return nil, fmt.Errorf("error preparing query DeleteAccount: %w", err)
 	}
+	if q.deleteEntryStmt, err = db.PrepareContext(ctx, deleteEntry); err != nil {
+		return nil, fmt.Errorf("error preparing query DeleteEntry: %w", err)
+	}
 	if q.getAccountStmt, err = db.PrepareContext(ctx, getAccount); err != nil {
 		return nil, fmt.Errorf("error preparing query GetAccount: %w", err)
+	}
+	if q.getEntriesStmt, err = db.PrepareContext(ctx, getEntries); err != nil {
+		return nil, fmt.Errorf("error preparing query GetEntries: %w", err)
+	}
+	if q.getEntryStmt, err = db.PrepareContext(ctx, getEntry); err != nil {
+		return nil, fmt.Errorf("error preparing query GetEntry: %w", err)
 	}
 	if q.getListAccountStmt, err = db.PrepareContext(ctx, getListAccount); err != nil {
 		return nil, fmt.Errorf("error preparing query GetListAccount: %w", err)
 	}
 	if q.updateAccountStmt, err = db.PrepareContext(ctx, updateAccount); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdateAccount: %w", err)
+	}
+	if q.updateEntryStmt, err = db.PrepareContext(ctx, updateEntry); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateEntry: %w", err)
 	}
 	return &q, nil
 }
@@ -49,14 +64,34 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing createAccountStmt: %w", cerr)
 		}
 	}
+	if q.createEntriesStmt != nil {
+		if cerr := q.createEntriesStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createEntriesStmt: %w", cerr)
+		}
+	}
 	if q.deleteAccountStmt != nil {
 		if cerr := q.deleteAccountStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing deleteAccountStmt: %w", cerr)
 		}
 	}
+	if q.deleteEntryStmt != nil {
+		if cerr := q.deleteEntryStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing deleteEntryStmt: %w", cerr)
+		}
+	}
 	if q.getAccountStmt != nil {
 		if cerr := q.getAccountStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getAccountStmt: %w", cerr)
+		}
+	}
+	if q.getEntriesStmt != nil {
+		if cerr := q.getEntriesStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getEntriesStmt: %w", cerr)
+		}
+	}
+	if q.getEntryStmt != nil {
+		if cerr := q.getEntryStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getEntryStmt: %w", cerr)
 		}
 	}
 	if q.getListAccountStmt != nil {
@@ -67,6 +102,11 @@ func (q *Queries) Close() error {
 	if q.updateAccountStmt != nil {
 		if cerr := q.updateAccountStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing updateAccountStmt: %w", cerr)
+		}
+	}
+	if q.updateEntryStmt != nil {
+		if cerr := q.updateEntryStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateEntryStmt: %w", cerr)
 		}
 	}
 	return err
@@ -109,10 +149,15 @@ type Queries struct {
 	db                 DBTX
 	tx                 *sql.Tx
 	createAccountStmt  *sql.Stmt
+	createEntriesStmt  *sql.Stmt
 	deleteAccountStmt  *sql.Stmt
+	deleteEntryStmt    *sql.Stmt
 	getAccountStmt     *sql.Stmt
+	getEntriesStmt     *sql.Stmt
+	getEntryStmt       *sql.Stmt
 	getListAccountStmt *sql.Stmt
 	updateAccountStmt  *sql.Stmt
+	updateEntryStmt    *sql.Stmt
 }
 
 func (q *Queries) WithTx(tx *sql.Tx) *Queries {
@@ -120,9 +165,14 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		db:                 tx,
 		tx:                 tx,
 		createAccountStmt:  q.createAccountStmt,
+		createEntriesStmt:  q.createEntriesStmt,
 		deleteAccountStmt:  q.deleteAccountStmt,
+		deleteEntryStmt:    q.deleteEntryStmt,
 		getAccountStmt:     q.getAccountStmt,
+		getEntriesStmt:     q.getEntriesStmt,
+		getEntryStmt:       q.getEntryStmt,
 		getListAccountStmt: q.getListAccountStmt,
 		updateAccountStmt:  q.updateAccountStmt,
+		updateEntryStmt:    q.updateEntryStmt,
 	}
 }
