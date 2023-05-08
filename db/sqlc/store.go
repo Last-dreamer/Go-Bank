@@ -38,7 +38,7 @@ func (store *Store) execTx(ctx context.Context, fn func(*Queries) error) error {
 }
 
 // transactiontxParams  the input params ....
-type TransactiontxParams struct {
+type TransfertxParams struct {
 	FromAccountId int64 `json:"from_account_id"`
 	ToAccountId   int64 `json:"to_account_id"`
 	Amount        int64 `json:"amount"`
@@ -53,12 +53,11 @@ type TransferTxResult struct {
 	ToEntry     Entries   `json:"to_entry"`
 }
 
-func (store *Store) TransferTx(ctx context.Context, args TransactiontxParams) (TransferTxResult, error) {
+func (store *Store) TransferTx(ctx context.Context, args TransfertxParams) (TransferTxResult, error) {
 
 	var result TransferTxResult
 
 	err := store.execTx(ctx, func(q *Queries) error {
-
 		var err error
 		result.Transfers, err = q.CreateTransfer(ctx, CreateTransferParams{
 			FromAccountID: sql.NullInt64{Int64: args.FromAccountId, Valid: true},
@@ -86,9 +85,10 @@ func (store *Store) TransferTx(ctx context.Context, args TransactiontxParams) (T
 			return err
 		}
 
+		// updating the balance ....
+
 		return nil
 	})
 
 	return result, err
-
 }
