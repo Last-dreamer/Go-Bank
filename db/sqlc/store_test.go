@@ -7,14 +7,13 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestStore(t *testing.T) {
+func TestTransferTx(t *testing.T) {
 	store := NewStore(testDb)
 
 	account1 := createRandomAccount(t)
 	account2 := createRandomAccount(t)
 
 	// concurrent transfers
-
 	n := 5
 	amount := int64(10)
 
@@ -77,6 +76,14 @@ func TestStore(t *testing.T) {
 		require.NoError(t, err)
 
 		// check for balance .....
+
+		fromAccount := result.FromAccount
+		require.NotEmpty(t, fromAccount)
+		require.Equal(t, account1.ID, fromAccount.ID)
+
+		toAccount := result.ToAccount
+		require.NotEmpty(t, toAccount)
+		require.Equal(t, account2.ID, toAccount.ID)
 
 	}
 
