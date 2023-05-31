@@ -85,7 +85,6 @@ func (store *Store) TransferTx(ctx context.Context, args TransfertxParams) (Tran
 		}
 
 		// updating the balance ....
-
 		return nil
 	})
 
